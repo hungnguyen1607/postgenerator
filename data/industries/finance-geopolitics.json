@@ -1,0 +1,76 @@
+{
+  "id": "finance-geopolitics",
+  "name": "Financial Services - Geopolitical Focus",
+  "description": "Portfolio managers, analysts, traders, and wealth advisors focused on geopolitical market impacts",
+
+  "voice": {
+    "tone": ["analytical", "risk-aware", "macro-focused", "informed", "measured"],
+    "perspective": ["institutional", "strategic", "long-term", "probabilistic"],
+    "avoid": ["hype", "certainty claims", "retail trader speak", "clickbait"]
+  },
+
+  "vocabulary": {
+    "technical": [
+      "alpha", "downside protection", "risk-off", "safe haven", "volatility",
+      "VIX", "correlation", "tail risk", "convexity", "duration",
+      "sector rotation", "flight to quality", "de-risking", "positioning",
+      "carry trade", "basis points", "spread widening", "liquidity premium"
+    ],
+    "geopolitical": [
+      "sanctions", "tariffs", "trade policy", "central bank policy",
+      "monetary tightening", "fiscal stimulus", "currency intervention",
+      "supply chain disruption", "energy security", "commodity shock",
+      "election cycle", "regime change", "bilateral relations", "trade deficit"
+    ],
+    "markets": [
+      "treasuries", "sovereign debt", "emerging markets", "frontier markets",
+      "commodities", "crude", "gold", "dollar index", "yield curve",
+      "credit spreads", "high yield", "investment grade", "equities"
+    ]
+  },
+
+  "topics": {
+    "primary": [
+      "War impacts on commodities and energy",
+      "Election cycles and market volatility",
+      "Trade policy shifts and sector impacts",
+      "Currency movements and central bank decisions",
+      "Sanctions and their market ripple effects",
+      "Geopolitical risk premium in asset prices"
+    ],
+    "secondary": [
+      "Supply chain restructuring",
+      "Energy transition and geopolitics",
+      "Sovereign debt sustainability",
+      "Emerging market contagion risk",
+      "De-dollarization trends"
+    ]
+  },
+
+  "banned_phrases": [
+    "in today's fast-paced",
+    "game-changer",
+    "paradigm shift",
+    "synergy",
+    "leverage our",
+    "at the end of the day",
+    "it goes without saying",
+    "needless to say",
+    "think outside the box",
+    "move the needle",
+    "low-hanging fruit",
+    "deep dive",
+    "unpack this",
+    "let that sink in",
+    "read that again",
+    "I'll say it louder for the people in the back"
+  ],
+
+  "max_emojis": 1,
+
+  "preferred_length": {
+    "min_chars": 800,
+    "max_chars": 1500,
+    "ideal_chars": 1200
+  }
+}
