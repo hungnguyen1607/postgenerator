@@ -7,62 +7,50 @@
 
 import { TrendData } from '@/lib/ai/prompts'
 
-// Broader subreddit coverage
+// Finance & Politics only
 const SUBREDDITS = [
   // Finance & Markets
   'wallstreetbets',
   'investing',
   'stocks',
-  'finance',
   'economics',
   'cryptocurrency',
-  'bitcoin',
 
-  // Politics & News
+  // Politics & Geopolitics
   'politics',
   'worldnews',
-  'news',
   'geopolitics',
 
-  // Tech & Business
-  'technology',
-  'business',
-  'startups',
-
-  // Specific topics
+  // Macro
   'energy',
-  'realestate',
 ]
 
-// Keywords that boost relevance
+// Keywords that boost relevance - finance & politics only
 const BOOST_KEYWORDS = [
-  // Events
-  'breaking', 'just', 'announced', 'report', 'update',
-
   // Politics
   'trump', 'biden', 'election', 'congress', 'senate', 'vote',
-  'democrat', 'republican', 'president', 'governor',
+  'democrat', 'republican', 'president', 'governor', 'supreme court',
 
   // Geopolitics
   'war', 'sanctions', 'tariff', 'china', 'russia', 'ukraine',
-  'israel', 'iran', 'nato', 'eu', 'border', 'military',
+  'israel', 'iran', 'nato', 'eu', 'border', 'military', 'missile',
 
-  // Economy
+  // Economy & Fed
   'fed', 'inflation', 'recession', 'rate', 'gdp', 'jobs',
-  'unemployment', 'cpi', 'economy', 'economic',
+  'unemployment', 'cpi', 'economy', 'treasury', 'deficit', 'debt',
 
   // Markets
   'stock', 'market', 'crash', 'rally', 'surge', 'plunge',
-  'earnings', 'ipo', 'merger', 'acquisition',
+  'dow', 'nasdaq', 's&p', 'bond', 'yield',
 
   // Crypto
-  'bitcoin', 'crypto', 'ethereum', 'btc', 'eth',
+  'bitcoin', 'crypto', 'ethereum', 'btc',
 
-  // Energy
-  'oil', 'gas', 'opec', 'energy', 'ev', 'tesla',
+  // Commodities
+  'oil', 'gas', 'opec', 'gold', 'commodity',
 
-  // Drama
-  'layoff', 'bankrupt', 'scandal', 'fraud', 'collapse', 'crisis',
+  // Crisis
+  'bankrupt', 'collapse', 'crisis', 'default',
 ]
 
 interface RedditPost {

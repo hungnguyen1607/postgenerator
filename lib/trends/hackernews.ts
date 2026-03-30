@@ -9,42 +9,33 @@ import { TrendData } from '@/lib/ai/prompts'
 
 const HN_API_BASE = 'https://hacker-news.firebaseio.com/v0'
 
-// Broader keywords for politics, finance, tech, geopolitics
+// Finance & Politics keywords only
 const RELEVANCE_KEYWORDS = [
   // Politics & Government
   'trump', 'biden', 'election', 'congress', 'senate', 'supreme court',
-  'legislation', 'policy', 'vote', 'democrat', 'republican', 'governor',
-  'president', 'administration', 'executive order', 'regulation',
+  'legislation', 'vote', 'democrat', 'republican', 'governor',
+  'president', 'administration', 'executive order',
 
   // Geopolitics & International
-  'china', 'russia', 'ukraine', 'israel', 'iran', 'nato', 'eu', 'brexit',
-  'sanctions', 'tariff', 'trade war', 'diplomacy', 'treaty', 'military',
-  'war', 'invasion', 'conflict', 'nuclear', 'missile', 'border',
-  'immigration', 'refugee', 'embassy', 'un', 'g7', 'g20', 'brics',
+  'china', 'russia', 'ukraine', 'israel', 'iran', 'nato', 'eu',
+  'sanctions', 'tariff', 'trade war', 'diplomacy', 'military',
+  'war', 'invasion', 'conflict', 'nuclear', 'missile',
+  'immigration', 'un', 'g7', 'g20', 'brics',
 
   // Economy & Finance
   'fed', 'federal reserve', 'interest rate', 'inflation', 'recession',
   'gdp', 'unemployment', 'jobs report', 'cpi', 'economic', 'economy',
-  'bank', 'banking', 'credit', 'debt', 'deficit', 'treasury',
-  'stock', 'market', 'nasdaq', 'dow', 's&p', 'nyse', 'ipo', 'earnings',
-  'hedge fund', 'private equity', 'venture capital', 'investment',
+  'bank', 'banking', 'debt', 'deficit', 'treasury', 'bond', 'yield',
+  'stock', 'market', 'nasdaq', 'dow', 's&p', 'wall street',
 
-  // Crypto & Digital Assets
-  'bitcoin', 'crypto', 'ethereum', 'blockchain', 'defi', 'nft',
-  'stablecoin', 'binance', 'coinbase', 'sec crypto',
+  // Crypto
+  'bitcoin', 'crypto', 'ethereum', 'sec crypto', 'coinbase',
 
-  // Commodities & Energy
-  'oil', 'opec', 'gas', 'energy', 'commodity', 'gold', 'silver',
-  'copper', 'lithium', 'uranium', 'solar', 'ev', 'tesla',
+  // Commodities
+  'oil', 'opec', 'gold', 'commodity',
 
-  // Tech & Regulation
-  'antitrust', 'monopoly', 'big tech', 'apple', 'google', 'meta',
-  'amazon', 'microsoft', 'ai regulation', 'data privacy', 'tiktok ban',
-  'section 230', 'ftc', 'doj',
-
-  // Major Events
-  'layoff', 'bankrupt', 'merger', 'acquisition', 'scandal', 'fraud',
-  'collapse', 'crisis', 'crash', 'rally', 'surge', 'plunge',
+  // Crisis events
+  'bankrupt', 'collapse', 'crisis', 'crash', 'default', 'bailout',
 ]
 
 interface HNItem {
