@@ -86,9 +86,12 @@ ${formatTrends(context.trends)}
 ---
 
 STRUCTURE TO USE: ${config.structure.name}
+Description: ${config.structure.description}
 Format: ${config.structure.format}
 
-HOOK STYLE INSPIRATION: "${config.hook.template}"
+HOOK STYLE: ${config.hook.name}
+Template: "${config.hook.template}"
+Example: "${config.hook.example}"
 
 ---
 

@@ -1,0 +1,97 @@
+{
+  "structures": [
+    {
+      "id": "contrarian_insight",
+      "name": "Contrarian Insight",
+      "description": "Challenge conventional wisdom with evidence",
+      "format": "Hook (bold claim) → Context (2-3 sentences) → Evidence (3 bullets) → Takeaway → Question",
+      "example_outline": [
+        "Hook: State the contrarian view",
+        "Context: Why most people believe the opposite",
+        "Evidence: 3 data points or observations supporting your view",
+        "Takeaway: What this means for readers",
+        "Question: Invite discussion"
+      ]
+    },
+    {
+      "id": "story_lesson",
+      "name": "Story to Lesson",
+      "description": "Share a narrative that reveals an insight",
+      "format": "Hook → Brief narrative (3-4 sentences) → Turning point → Lesson learned → Call to action",
+      "example_outline": [
+        "Hook: Tease the story outcome",
+        "Narrative: Set the scene, what happened",
+        "Turning point: The moment of realization",
+        "Lesson: The broader principle",
+        "CTA: What readers should do or consider"
+      ]
+    },
+    {
+      "id": "data_driven",
+      "name": "Data Driven",
+      "description": "Lead with numbers, build to synthesis",
+      "format": "Surprising statistic → Breakdown (3 numbered points) → Synthesis → Question",
+      "example_outline": [
+        "Stat: Open with a compelling number",
+        "Point 1: First implication of the data",
+        "Point 2: Second implication",
+        "Point 3: Third implication",
+        "Synthesis: What it all means together",
+        "Question: What readers should watch"
+      ]
+    },
+    {
+      "id": "framework",
+      "name": "Framework Share",
+      "description": "Teach a mental model or decision framework",
+      "format": "Problem statement → Framework intro → Steps (3-4 numbered) → Real example → Invitation to try",
+      "example_outline": [
+        "Problem: The challenge readers face",
+        "Framework: Name and introduce your approach",
+        "Step 1-4: Walk through the process",
+        "Example: Show it in action",
+        "Invitation: Encourage readers to apply it"
+      ]
+    },
+    {
+      "id": "prediction",
+      "name": "Prediction",
+      "description": "Make a bold call with supporting signals",
+      "format": "Bold prediction → Current signals (3 bullets) → Historical parallel → What to watch → Caveat",
+      "example_outline": [
+        "Prediction: State your forecast clearly",
+        "Signal 1-3: Evidence supporting the prediction",
+        "Historical parallel: When something similar happened",
+        "What to watch: Leading indicators",
+        "Caveat: Acknowledge uncertainty professionally"
+      ]
+    },
+    {
+      "id": "comparison",
+      "name": "Then vs Now",
+      "description": "Compare two time periods or scenarios",
+      "format": "Setup (then) → Contrast (now) → Key differences (bullets) → Implications → Question",
+      "example_outline": [
+        "Then: Describe the past situation",
+        "Now: Describe current situation",
+        "Differences: 3-4 key changes",
+        "Implications: What this means",
+        "Question: What readers think"
+      ]
+    },
+    {
+      "id": "myth_reality",
+      "name": "Myth vs Reality",
+      "description": "Debunk a common misconception",
+      "format": "Common belief → Why it's wrong → The reality (with evidence) → What to do instead → Question",
+      "example_outline": [
+        "Myth: State the misconception",
+        "Problem: Why people believe it",
+        "Reality: What's actually true",
+        "Evidence: Supporting data",
+        "Action: Better approach",
+        "Question: Engage readers"
+      ]
+    }
+  ]
+}

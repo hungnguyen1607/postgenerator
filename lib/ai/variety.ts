@@ -3,7 +3,32 @@
  *
  * This module randomizes different aspects of post generation
  * so each output feels fresh and unique.
+ *
+ * Loads patterns from JSON files in data/patterns/
  */
+
+import hooksData from '@/data/patterns/hooks.json'
+import structuresData from '@/data/patterns/structures.json'
+
+// Types for pattern data
+export interface HookPattern {
+  id: string
+  name: string
+  template: string
+  example: string
+}
+
+export interface StructurePattern {
+  id: string
+  name: string
+  description: string
+  format: string
+  example_outline: string[]
+}
+
+// Load patterns from JSON
+const HOOKS: HookPattern[] = hooksData.hooks
+const STRUCTURES: StructurePattern[] = structuresData.structures
 
 // Different perspectives the post can take
 const PERSPECTIVES = [
@@ -20,6 +45,7 @@ const TONES = [
   'cautiously optimistic with caveats',
   'warning but not alarmist',
   'curious and exploratory',
+  'confident but humble',
 ]
 
 // How specific vs. thematic the post should be
@@ -36,47 +62,7 @@ const OPENING_STYLES = [
   'start with a recent observation',
   'start with a rhetorical question',
   'start with a pattern recognition',
-]
-
-// Post structure templates
-const STRUCTURES = [
-  {
-    id: 'contrarian_insight',
-    name: 'Contrarian Insight',
-    format: 'Hook (bold claim) → Context (2 sentences) → Evidence (3 bullets) → Takeaway → Question',
-  },
-  {
-    id: 'story_lesson',
-    name: 'Story Lesson',
-    format: 'Hook → Brief narrative (3 sentences) → Turning point → Lesson → Call to action',
-  },
-  {
-    id: 'data_driven',
-    name: 'Data Driven',
-    format: 'Surprising statistic → Breakdown (3 numbered points) → Synthesis → Question',
-  },
-  {
-    id: 'framework',
-    name: 'Framework Share',
-    format: 'Problem statement → Framework intro → Steps (3-5 numbered) → Example → Invitation',
-  },
-  {
-    id: 'prediction',
-    name: 'Prediction',
-    format: 'Bold prediction → Current signals (3 bullets) → Historical parallel → What to watch',
-  },
-]
-
-// Hook templates for opening lines
-const HOOKS = [
-  { id: 'contrarian', template: 'Most people think {X}. They\'re wrong.' },
-  { id: 'statistic', template: '{X}% of {group} don\'t realize {insight}.' },
-  { id: 'observation', template: 'I\'ve watched {X} for {timeframe}. Here\'s what nobody talks about:' },
-  { id: 'prediction', template: 'In {timeframe}, we\'ll look back at {event} as the moment everything changed.' },
-  { id: 'confession', template: 'I used to believe {X}. Then I saw {evidence}.' },
-  { id: 'question', template: 'Why does everyone ignore {X} when analyzing {Y}?' },
-  { id: 'pattern', template: 'Every time {trigger} happens, {outcome} follows.' },
-  { id: 'warning', template: 'The {X} everyone is celebrating? It\'s hiding a bigger problem.' },
+  'start with a personal anecdote',
 ]
 
 /**
@@ -84,6 +70,14 @@ const HOOKS = [
  */
 function randomChoice<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)]
+}
+
+/**
+ * Pick N random elements from an array (no duplicates)
+ */
+function randomSample<T>(arr: T[], n: number): T[] {
+  const shuffled = [...arr].sort(() => Math.random() - 0.5)
+  return shuffled.slice(0, n)
 }
 
 /**
@@ -98,10 +92,13 @@ export interface VarietyConfig {
     id: string
     name: string
     format: string
+    description: string
   }
   hook: {
     id: string
+    name: string
     template: string
+    example: string
   }
 }
 
@@ -110,12 +107,89 @@ export interface VarietyConfig {
  * Called fresh for each post generation
  */
 export function generateVarietyConfig(): VarietyConfig {
+  const structure = randomChoice(STRUCTURES)
+  const hook = randomChoice(HOOKS)
+
   return {
     perspective: randomChoice(PERSPECTIVES),
     tone: randomChoice(TONES),
     specificity: randomChoice(SPECIFICITY_LEVELS),
     openingStyle: randomChoice(OPENING_STYLES),
-    structure: randomChoice(STRUCTURES),
-    hook: randomChoice(HOOKS),
+    structure: {
+      id: structure.id,
+      name: structure.name,
+      format: structure.format,
+      description: structure.description,
+    },
+    hook: {
+      id: hook.id,
+      name: hook.name,
+      template: hook.template,
+      example: hook.example,
+    },
+  }
+}
+
+/**
+ * Get all available hooks (for UI display or debugging)
+ */
+export function getAllHooks(): HookPattern[] {
+  return HOOKS
+}
+
+/**
+ * Get all available structures (for UI display or debugging)
+ */
+export function getAllStructures(): StructurePattern[] {
+  return STRUCTURES
+}
+
+/**
+ * Get a specific hook by ID
+ */
+export function getHookById(id: string): HookPattern | undefined {
+  return HOOKS.find(h => h.id === id)
+}
+
+/**
+ * Get a specific structure by ID
+ */
+export function getStructureById(id: string): StructurePattern | undefined {
+  return STRUCTURES.find(s => s.id === id)
+}
+
+/**
+ * Generate a variety config with specific hook and structure
+ * Useful when user wants to control the format
+ */
+export function generateVarietyConfigWithPatterns(
+  hookId?: string,
+  structureId?: string
+): VarietyConfig {
+  const structure = structureId
+    ? getStructureById(structureId) || randomChoice(STRUCTURES)
+    : randomChoice(STRUCTURES)
+
+  const hook = hookId
+    ? getHookById(hookId) || randomChoice(HOOKS)
+    : randomChoice(HOOKS)
+
+  return {
+    perspective: randomChoice(PERSPECTIVES),
+    tone: randomChoice(TONES),
+    specificity: randomChoice(SPECIFICITY_LEVELS),
+    openingStyle: randomChoice(OPENING_STYLES),
+    structure: {
+      id: structure.id,
+      name: structure.name,
+      format: structure.format,
+      description: structure.description,
+    },
+    hook: {
+      id: hook.id,
+      name: hook.name,
+      template: hook.template,
+      example: hook.example,
+    },
   }
 }

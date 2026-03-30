@@ -7,8 +7,9 @@
 
 import { streamText } from 'ai'
 import { anthropic } from '@ai-sdk/anthropic'
-import { buildPrompt, buildSystemPrompt, TrendData } from '@/lib/ai/prompts'
+import { buildPrompt, buildSystemPrompt } from '@/lib/ai/prompts'
 import { generateVarietyConfig } from '@/lib/ai/variety'
+import { getAggregatedTrends } from '@/lib/trends/aggregator'
 
 // Use edge runtime for streaming
 export const runtime = 'edge'
@@ -18,12 +19,8 @@ export async function POST(req: Request) {
     // Generate fresh variety config for this request
     const varietyConfig = generateVarietyConfig()
 
-    // Placeholder trends (Phase 3 will add real trend fetching)
-    const trends: TrendData[] = [
-      { title: 'Federal Reserve signals rate decision ahead of election', source: 'Evergreen' },
-      { title: 'Oil prices volatile amid Middle East tensions', source: 'Evergreen' },
-      { title: 'Dollar strength impacting emerging market flows', source: 'Evergreen' },
-    ]
+    // Fetch real trends from HN + Reddit (with caching)
+    const trends = await getAggregatedTrends()
 
     // Build prompts
     const systemPrompt = buildSystemPrompt()
