@@ -108,18 +108,32 @@ function normalizeScores(trends: TrendData[]): TrendData[] {
 async function fetchFreshTrends(): Promise<TrendData[]> {
   // Fetch from all sources in parallel
   const [hnTrends, redditTrends] = await Promise.all([
-    fetchHackerNewsTrends(10),
-    fetchRedditTrends(10),
+    fetchHackerNewsTrends(15),
+    fetchRedditTrends(15),
   ])
 
   // Combine and normalize
   const allTrends = [...hnTrends, ...redditTrends]
   const normalized = normalizeScores(allTrends)
 
-  // Sort by normalized score and take top results
-  return normalized
-    .sort((a, b) => (b.score || 0) - (a.score || 0))
-    .slice(0, 15)
+  // Shuffle to add variety, then sort by score
+  const shuffled = normalized.sort(() => Math.random() - 0.5)
+
+  // Take a mix - some top scored, some random
+  const topScored = [...normalized].sort((a, b) => (b.score || 0) - (a.score || 0)).slice(0, 10)
+  const random = shuffled.slice(0, 5)
+
+  // Combine and dedupe
+  const combined = [...topScored, ...random]
+  const seen = new Set<string>()
+  const unique = combined.filter(t => {
+    const key = t.title.toLowerCase().slice(0, 40)
+    if (seen.has(key)) return false
+    seen.add(key)
+    return true
+  })
+
+  return unique.slice(0, 12)
 }
 
 /**

@@ -2,26 +2,49 @@
  * HackerNews Trend Fetcher
  *
  * Uses the free Firebase HN API to fetch top stories
- * and filter for geopolitics/finance relevant topics.
+ * and filter for relevant topics.
  */
 
 import { TrendData } from '@/lib/ai/prompts'
 
 const HN_API_BASE = 'https://hacker-news.firebaseio.com/v0'
 
-// Keywords that indicate geopolitics/finance relevance
+// Broader keywords for politics, finance, tech, geopolitics
 const RELEVANCE_KEYWORDS = [
-  // Geopolitical
-  'war', 'sanctions', 'tariff', 'election', 'trump', 'biden', 'china', 'russia',
-  'ukraine', 'israel', 'iran', 'nato', 'military', 'nuclear', 'treaty',
-  'diplomacy', 'embargo', 'conflict', 'invasion', 'coup',
-  // Finance/Markets
+  // Politics & Government
+  'trump', 'biden', 'election', 'congress', 'senate', 'supreme court',
+  'legislation', 'policy', 'vote', 'democrat', 'republican', 'governor',
+  'president', 'administration', 'executive order', 'regulation',
+
+  // Geopolitics & International
+  'china', 'russia', 'ukraine', 'israel', 'iran', 'nato', 'eu', 'brexit',
+  'sanctions', 'tariff', 'trade war', 'diplomacy', 'treaty', 'military',
+  'war', 'invasion', 'conflict', 'nuclear', 'missile', 'border',
+  'immigration', 'refugee', 'embassy', 'un', 'g7', 'g20', 'brics',
+
+  // Economy & Finance
   'fed', 'federal reserve', 'interest rate', 'inflation', 'recession',
-  'bank', 'market', 'stock', 'bond', 'treasury', 'dollar', 'currency',
-  'oil', 'commodity', 'gold', 'crypto', 'bitcoin', 'volatility', 'vix',
-  'hedge fund', 'wall street', 'nasdaq', 's&p', 'dow', 'trade',
-  // Central banks
-  'ecb', 'boj', 'pboc', 'central bank', 'monetary', 'fiscal',
+  'gdp', 'unemployment', 'jobs report', 'cpi', 'economic', 'economy',
+  'bank', 'banking', 'credit', 'debt', 'deficit', 'treasury',
+  'stock', 'market', 'nasdaq', 'dow', 's&p', 'nyse', 'ipo', 'earnings',
+  'hedge fund', 'private equity', 'venture capital', 'investment',
+
+  // Crypto & Digital Assets
+  'bitcoin', 'crypto', 'ethereum', 'blockchain', 'defi', 'nft',
+  'stablecoin', 'binance', 'coinbase', 'sec crypto',
+
+  // Commodities & Energy
+  'oil', 'opec', 'gas', 'energy', 'commodity', 'gold', 'silver',
+  'copper', 'lithium', 'uranium', 'solar', 'ev', 'tesla',
+
+  // Tech & Regulation
+  'antitrust', 'monopoly', 'big tech', 'apple', 'google', 'meta',
+  'amazon', 'microsoft', 'ai regulation', 'data privacy', 'tiktok ban',
+  'section 230', 'ftc', 'doj',
+
+  // Major Events
+  'layoff', 'bankrupt', 'merger', 'acquisition', 'scandal', 'fraud',
+  'collapse', 'crisis', 'crash', 'rally', 'surge', 'plunge',
 ]
 
 interface HNItem {
@@ -32,60 +55,44 @@ interface HNItem {
   type: string
 }
 
-/**
- * Check if a title is relevant to our focus areas
- */
 function isRelevant(title: string): boolean {
   const lowerTitle = title.toLowerCase()
   return RELEVANCE_KEYWORDS.some(keyword => lowerTitle.includes(keyword))
 }
 
-/**
- * Fetch a single HN item by ID
- */
 async function fetchItem(id: number): Promise<HNItem | null> {
   try {
     const response = await fetch(`${HN_API_BASE}/item/${id}.json`, {
-      next: { revalidate: 900 } // Cache for 15 minutes
+      next: { revalidate: 900 }
     })
     if (!response.ok) return null
-    return response.json()
+    return await response.json()
   } catch {
     return null
   }
 }
 
-/**
- * Fetch top story IDs from HN
- */
 async function fetchTopStoryIds(): Promise<number[]> {
   try {
     const response = await fetch(`${HN_API_BASE}/topstories.json`, {
-      next: { revalidate: 900 } // Cache for 15 minutes
+      next: { revalidate: 900 }
     })
     if (!response.ok) return []
-    return response.json()
+    return await response.json()
   } catch {
     return []
   }
 }
 
-/**
- * Fetch and filter HN trends for geopolitics/finance
- * Returns top relevant stories sorted by score
- */
-export async function fetchHackerNewsTrends(limit: number = 10): Promise<TrendData[]> {
+export async function fetchHackerNewsTrends(limit: number = 15): Promise<TrendData[]> {
   try {
-    // Get top 100 story IDs (we'll filter down)
     const storyIds = await fetchTopStoryIds()
-    const topIds = storyIds.slice(0, 100)
+    const topIds = storyIds.slice(0, 150) // Check more stories
 
-    // Fetch stories in parallel (batched)
     const stories = await Promise.all(
       topIds.map(id => fetchItem(id))
     )
 
-    // Filter for relevant stories and format
     const relevantStories = stories
       .filter((story): story is HNItem =>
         story !== null &&

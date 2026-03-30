@@ -2,26 +2,67 @@
  * Reddit Trend Fetcher
  *
  * Uses Reddit's public JSON API (no auth required)
- * to fetch hot posts from finance/geopolitics subreddits.
+ * to fetch hot posts from various subreddits.
  */
 
 import { TrendData } from '@/lib/ai/prompts'
 
-// Subreddits relevant to finance and geopolitics
+// Broader subreddit coverage
 const SUBREDDITS = [
+  // Finance & Markets
   'wallstreetbets',
   'investing',
   'stocks',
-  'geopolitics',
-  'economics',
   'finance',
+  'economics',
+  'cryptocurrency',
+  'bitcoin',
+
+  // Politics & News
+  'politics',
+  'worldnews',
+  'news',
+  'geopolitics',
+
+  // Tech & Business
+  'technology',
+  'business',
+  'startups',
+
+  // Specific topics
+  'energy',
+  'realestate',
 ]
 
-// Keywords that boost relevance scoring
+// Keywords that boost relevance
 const BOOST_KEYWORDS = [
-  'war', 'sanctions', 'tariff', 'election', 'fed', 'rate',
-  'inflation', 'recession', 'china', 'russia', 'oil', 'gold',
-  'dollar', 'market', 'crash', 'rally', 'volatility',
+  // Events
+  'breaking', 'just', 'announced', 'report', 'update',
+
+  // Politics
+  'trump', 'biden', 'election', 'congress', 'senate', 'vote',
+  'democrat', 'republican', 'president', 'governor',
+
+  // Geopolitics
+  'war', 'sanctions', 'tariff', 'china', 'russia', 'ukraine',
+  'israel', 'iran', 'nato', 'eu', 'border', 'military',
+
+  // Economy
+  'fed', 'inflation', 'recession', 'rate', 'gdp', 'jobs',
+  'unemployment', 'cpi', 'economy', 'economic',
+
+  // Markets
+  'stock', 'market', 'crash', 'rally', 'surge', 'plunge',
+  'earnings', 'ipo', 'merger', 'acquisition',
+
+  // Crypto
+  'bitcoin', 'crypto', 'ethereum', 'btc', 'eth',
+
+  // Energy
+  'oil', 'gas', 'opec', 'energy', 'ev', 'tesla',
+
+  // Drama
+  'layoff', 'bankrupt', 'scandal', 'fraud', 'collapse', 'crisis',
 ]
 
 interface RedditPost {
@@ -40,29 +81,19 @@ interface RedditResponse {
   }
 }
 
-/**
- * Calculate relevance score based on keywords
- */
 function calculateRelevance(title: string, baseScore: number): number {
   const lowerTitle = title.toLowerCase()
   const keywordMatches = BOOST_KEYWORDS.filter(kw => lowerTitle.includes(kw)).length
-  // Boost score by 20% per keyword match
-  return baseScore * (1 + keywordMatches * 0.2)
+  return baseScore * (1 + keywordMatches * 0.25)
 }
 
-/**
- * Fetch hot posts from a single subreddit
- */
 async function fetchSubreddit(subreddit: string): Promise<TrendData[]> {
   try {
     const response = await fetch(
-      `https://www.reddit.com/r/${subreddit}/hot.json?limit=25`,
+      `https://www.reddit.com/r/${subreddit}/hot.json?limit=20`,
       {
-        headers: {
-          // Reddit requires a user agent
-          'User-Agent': 'PostGenerator/1.0',
-        },
-        next: { revalidate: 900 } // Cache for 15 minutes
+        headers: { 'User-Agent': 'PostGenerator/1.0' },
+        next: { revalidate: 900 }
       }
     )
 
@@ -75,12 +106,12 @@ async function fetchSubreddit(subreddit: string): Promise<TrendData[]> {
 
     return data.data.children
       .filter(post => {
-        // Filter out stickied/meta posts
         const title = post.data.title.toLowerCase()
         return !title.includes('daily discussion') &&
                !title.includes('weekend discussion') &&
                !title.includes('megathread') &&
-               post.data.score > 50 // Minimum engagement threshold
+               !title.includes('weekly') &&
+               post.data.score > 100
       })
       .map(post => ({
         title: post.data.title,
@@ -93,25 +124,18 @@ async function fetchSubreddit(subreddit: string): Promise<TrendData[]> {
   }
 }
 
-/**
- * Fetch trends from all configured subreddits
- * Returns combined and sorted results
- */
-export async function fetchRedditTrends(limit: number = 10): Promise<TrendData[]> {
+export async function fetchRedditTrends(limit: number = 15): Promise<TrendData[]> {
   try {
-    // Fetch all subreddits in parallel
     const results = await Promise.all(
       SUBREDDITS.map(sub => fetchSubreddit(sub))
     )
 
-    // Flatten, sort by relevance-adjusted score, and dedupe
     const allPosts = results.flat()
     const seen = new Set<string>()
 
     const uniquePosts = allPosts
       .sort((a, b) => (b.score || 0) - (a.score || 0))
       .filter(post => {
-        // Simple deduplication by title similarity
         const normalizedTitle = post.title.toLowerCase().slice(0, 50)
         if (seen.has(normalizedTitle)) return false
         seen.add(normalizedTitle)
