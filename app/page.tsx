@@ -37,21 +37,10 @@ export default function Home() {
         const { done, value } = await reader.read()
         if (done) break
 
+        // Plain text stream - just append the chunks
         const chunk = decoder.decode(value, { stream: true })
-        // Parse SSE data chunks from Vercel AI SDK
-        const lines = chunk.split('\n')
-        for (const line of lines) {
-          if (line.startsWith('0:')) {
-            // Text chunk - parse the JSON string
-            try {
-              const text = JSON.parse(line.slice(2))
-              fullText += text
-              setPost(fullText)
-            } catch {
-              // Ignore parse errors for non-text chunks
-            }
-          }
-        }
+        fullText += chunk
+        setPost(fullText)
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong')

@@ -31,12 +31,12 @@ export async function POST(req: Request) {
       model: anthropic('claude-sonnet-4-20250514'),
       system: systemPrompt,
       prompt: prompt,
-      maxTokens: 1024,
+      maxOutputTokens: 1024,
       temperature: 0.8, // Higher = more creative
     })
 
     // Return as streaming response
-    return result.toDataStreamResponse()
+    return result.toTextStreamResponse()
 
   } catch (error) {
     console.error('Generation error:', error)
