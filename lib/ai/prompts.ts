@@ -60,6 +60,13 @@ VOICE:
 - Doubt is fine. Uncertainty is fine. Not having answers is fine.
 - Say "I" not "we"
 
+HUMOR (use when it fits):
+- Dry, self-deprecating, honest
+- Admitting you don't know what you're doing
+- The gap between what you said and what you actually think
+- Example energy: "My client asked if we're good. I said yes. I have no idea if we're good."
+- Never try to be funny. Just be honest about the absurdity.
+
 BANNED:
 thrilled, excited, journey, leverage, game-changer, landscape, deep dive, unpack, "thoughts?", "what's your take", "here's the thing", "let that sink in"
 
