@@ -4,23 +4,38 @@ import { useState, useCallback } from 'react'
 
 export default function Home() {
   const [post, setPost] = useState('')
+  const [memeUrl, setMemeUrl] = useState<string | null>(null)
   const [isGenerating, setIsGenerating] = useState(false)
   const [copied, setCopied] = useState(false)
 
   const generatePost = useCallback(async () => {
     setIsGenerating(true)
     setPost('')
+    setMemeUrl(null)
     setCopied(false)
 
     try {
-      const response = await fetch('/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-      })
+      // Fetch post and meme in parallel
+      const [postResponse, memeResponse] = await Promise.all([
+        fetch('/api/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+        }),
+        fetch('/api/meme'),
+      ])
 
-      if (!response.ok) return
+      // Handle meme response
+      if (memeResponse.ok) {
+        const memeData = await memeResponse.json()
+        if (memeData.memeUrl) {
+          setMemeUrl(memeData.memeUrl)
+        }
+      }
 
-      const reader = response.body?.getReader()
+      // Handle streaming post response
+      if (!postResponse.ok) return
+
+      const reader = postResponse.body?.getReader()
       if (!reader) return
 
       const decoder = new TextDecoder()
@@ -45,6 +60,26 @@ export default function Home() {
     setTimeout(() => setCopied(false), 2000)
   }, [post])
 
+  const downloadMeme = useCallback(async () => {
+    if (!memeUrl) return
+
+    try {
+      const response = await fetch(memeUrl)
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = 'meme.jpg'
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      window.URL.revokeObjectURL(url)
+    } catch {
+      // Fallback: open in new tab
+      window.open(memeUrl, '_blank')
+    }
+  }, [memeUrl])
+
   return (
     <main className="min-h-screen bg-black text-white p-8">
       <div className="max-w-2xl mx-auto">
@@ -68,7 +103,23 @@ export default function Home() {
               onClick={copyToClipboard}
               className="mt-4 text-xs text-neutral-500 hover:text-white"
             >
-              {copied ? 'Copied' : 'Copy'}
+              {copied ? 'Copied' : 'Copy text'}
+            </button>
+          </div>
+        )}
+
+        {memeUrl && (
+          <div className="mt-8">
+            <img
+              src={memeUrl}
+              alt="Related meme"
+              className="max-w-full rounded"
+            />
+            <button
+              onClick={downloadMeme}
+              className="mt-2 text-xs text-neutral-500 hover:text-white"
+            >
+              Download meme
             </button>
           </div>
         )}
