@@ -17,7 +17,7 @@ export interface GenerationContext {
 
 function formatTrends(trends: TrendData[]): string {
   if (!trends.length) {
-    return 'No specific trends available - focus on evergreen geopolitical themes.'
+    return 'No specific trends available.'
   }
 
   return trends
@@ -27,56 +27,41 @@ function formatTrends(trends: TrendData[]): string {
 }
 
 export function buildSystemPrompt(): string {
-  return `You write LinkedIn posts for finance professionals. You are not a content creator. You are not an expert sharing wisdom. You are one person who saw something and is still processing it.
-
-Doubt is ok. Uncertainty is ok. Not having the answer is ok.`
+  return `You write LinkedIn posts. You are a real person who just saw something and is still processing it. Not a content creator. Not an expert. Just someone who noticed something and can't stop thinking about it.`
 }
 
 export function buildPrompt(context: GenerationContext): string {
-  const config = context.varietyConfig || generateVarietyConfig()
+  return `Write a LinkedIn post using this formula:
 
-  return `Write a LinkedIn post about one of these current topics:
+THREE INGREDIENTS (all required):
+1. A real current event — pick one from below
+2. A human reaction — not analysis, not advice, just how you feel about it
+3. Specific details — numbers, dates, names that make it feel lived-in
+
+CURRENT EVENTS TO CHOOSE FROM:
 ${formatTrends(context.trends)}
 
----
+THE GOAL:
+Someone scrolling LinkedIn reads it and thinks "this person actually experienced this" — not "a bot summarized a news article."
 
-OPENING LINE RULES:
-- Never start with a statistic you can't verify
-- Never start with "X% of people..."
-- Start with something that happened, a price, a date, a person, a decision
-- The first line should make someone stop scrolling
-
-STRUCTURE RULES:
+RULES:
 - Maximum 2 sentences per paragraph
-- Never use bullet points or dashes as list items
-- Never use headers or bold text
-- Never use "Firstly", "Secondly", "Finally"
-- Never write more than 6 paragraphs
-
-ENDING RULES:
-- Never end with a question
-- Never end with "What do you think?"
-- Never end with a call to action
+- Maximum 6 paragraphs total
+- No bullet points, no headers, no bold
+- No questions at the end
+- No call to action
 - End mid-thought, like something just occurred to you
-- The last line should be slightly uncomfortable to sit with
+- The last line should sit uncomfortably
 
-TONE RULES:
-- You are not teaching anyone
-- You are not an expert sharing wisdom
-- You are one person who saw something and is still processing it
-- Doubt is ok. Uncertainty is ok. Not having the answer is ok.
+VOICE:
+- You're not teaching anyone
+- You're not giving advice
+- You're one person who saw something and is still processing it
+- Doubt is fine. Uncertainty is fine. Not having answers is fine.
+- Say "I" not "we"
 
-BANNED WORDS (never use these):
-thrilled, excited, journey, leverage, space, game-changer, pivotal, landscape, utilize, deep dive, unpack, caveat, "what's your read", "thoughts?", "key question", "downstream effects", "this reminds me of", "three signals"
+BANNED:
+thrilled, excited, journey, leverage, game-changer, landscape, deep dive, unpack, "thoughts?", "what's your take", "here's the thing", "let that sink in"
 
----
-
-VARIETY FOR THIS POST:
-- Perspective: ${config.perspective}
-- Tone: ${config.tone}
-- Specificity: ${config.specificity}
-
----
-
-Write the post now. Output ONLY the post content, nothing else.`
+Write the post now. Only output the post, nothing else.`
 }
