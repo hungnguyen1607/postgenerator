@@ -1,140 +1,158 @@
 /**
- * Meme Fetcher
- *
- * Searches Reddit for memes related to a topic
+ * Meme Generator using Imgflip API
  */
 
-const MEME_SUBREDDITS = [
-  'memes',
-  'dankmemes',
-  'wallstreetbets',
-  'ProgrammerHumor',
-  'financememes',
-  'economicmemes',
+// Popular meme templates with their IDs
+const MEME_TEMPLATES = [
+  { id: '181913649', name: 'Drake Hotline Bling' },
+  { id: '87743020', name: 'Two Buttons' },
+  { id: '112126428', name: 'Distracted Boyfriend' },
+  { id: '131087935', name: 'Running Away Balloon' },
+  { id: '217743513', name: 'UNO Draw 25 Cards' },
+  { id: '222403160', name: 'Bernie Sanders Again' },
+  { id: '124822590', name: 'Left Exit 12 Off Ramp' },
+  { id: '91538330', name: 'X X Everywhere' },
+  { id: '102156234', name: 'Mocking Spongebob' },
+  { id: '93895088', name: 'Expanding Brain' },
+  { id: '247375501', name: 'Buff Doge vs Cheems' },
+  { id: '252600902', name: 'Always Has Been' },
+  { id: '188390779', name: 'Woman Yelling At Cat' },
+  { id: '119139145', name: 'Blank Nut Button' },
+  { id: '61579', name: 'One Does Not Simply' },
+  { id: '101470', name: 'Ancient Aliens' },
+  { id: '61520', name: 'Futurama Fry' },
+  { id: '1035805', name: 'Boardroom Meeting' },
+  { id: '4087833', name: 'Waiting Skeleton' },
+  { id: '135256802', name: 'Epic Handshake' },
 ]
 
-interface RedditPost {
-  data: {
-    title: string
+interface MemeResult {
+  success: boolean
+  data?: {
     url: string
-    post_hint?: string
-    is_video: boolean
-    over_18: boolean
-    score: number
+    page_url: string
   }
+  error_message?: string
 }
 
-interface RedditResponse {
-  data: {
-    children: RedditPost[]
+/**
+ * Generate captions for different meme formats
+ */
+function generateCaptions(template: string, topic: string): { text0: string; text1: string } {
+  // Extract key parts of the topic
+  const shortTopic = topic.length > 50 ? topic.slice(0, 50) + '...' : topic
+
+  switch (template) {
+    case 'Drake Hotline Bling':
+      return {
+        text0: 'Reading the news like a normal person',
+        text1: `Panic scrolling about ${shortTopic}`,
+      }
+    case 'Distracted Boyfriend':
+      return {
+        text0: shortTopic,
+        text1: 'My actual work',
+      }
+    case 'Two Buttons':
+      return {
+        text0: 'Ignore it',
+        text1: `Overthink ${shortTopic}`,
+      }
+    case 'UNO Draw 25 Cards':
+      return {
+        text0: `Stay calm about ${shortTopic}`,
+        text1: 'Draw 25',
+      }
+    case 'Left Exit 12 Off Ramp':
+      return {
+        text0: 'Staying productive',
+        text1: `Doom scrolling ${shortTopic}`,
+      }
+    case 'Always Has Been':
+      return {
+        text0: `Wait, it's all ${shortTopic}?`,
+        text1: 'Always has been',
+      }
+    case 'Woman Yelling At Cat':
+      return {
+        text0: `Everyone panicking about ${shortTopic}`,
+        text1: 'Me just vibing',
+      }
+    case 'One Does Not Simply':
+      return {
+        text0: 'One does not simply',
+        text1: `Ignore ${shortTopic}`,
+      }
+    case 'Futurama Fry':
+      return {
+        text0: `Not sure if ${shortTopic} is good`,
+        text1: 'Or if I should panic',
+      }
+    case 'Epic Handshake':
+      return {
+        text0: 'Bulls',
+        text1: 'Bears',
+      }
+    case 'Buff Doge vs Cheems':
+      return {
+        text0: `Me explaining ${shortTopic}`,
+        text1: 'Me understanding it',
+      }
+    default:
+      return {
+        text0: shortTopic,
+        text1: 'Me pretending to understand',
+      }
   }
 }
 
 /**
- * Check if URL is a direct image link
+ * Generate a meme using imgflip API
  */
-function isImageUrl(url: string): boolean {
-  return /\.(jpg|jpeg|png|gif|webp)$/i.test(url) ||
-    url.includes('i.redd.it') ||
-    url.includes('i.imgur.com')
-}
+export async function generateMeme(topic: string): Promise<string | null> {
+  const username = process.env.IMGFLIP_USERNAME
+  const password = process.env.IMGFLIP_PASSWORD
 
-/**
- * Search a subreddit for memes matching keywords
- */
-async function searchSubreddit(subreddit: string, query: string): Promise<string | null> {
-  try {
-    const response = await fetch(
-      `https://www.reddit.com/r/${subreddit}/search.json?q=${encodeURIComponent(query)}&restrict_sr=1&sort=top&t=month&limit=10`,
-      {
-        headers: { 'User-Agent': 'PostGenerator/1.0' },
-      }
-    )
-
-    if (!response.ok) return null
-
-    const data: RedditResponse = await response.json()
-
-    // Find first valid image post
-    for (const post of data.data.children) {
-      const { url, is_video, over_18, post_hint } = post.data
-
-      if (over_18 || is_video) continue
-      if (post_hint === 'image' || isImageUrl(url)) {
-        return url
-      }
-    }
-
+  if (!username || !password) {
+    console.warn('Imgflip credentials not set')
     return null
-  } catch {
-    return null
   }
-}
 
-/**
- * Get hot memes from a subreddit (fallback when search fails)
- */
-async function getHotMemes(subreddit: string): Promise<string | null> {
+  // Pick random template
+  const template = MEME_TEMPLATES[Math.floor(Math.random() * MEME_TEMPLATES.length)]
+  const captions = generateCaptions(template.name, topic)
+
   try {
-    const response = await fetch(
-      `https://www.reddit.com/r/${subreddit}/hot.json?limit=25`,
-      {
-        headers: { 'User-Agent': 'PostGenerator/1.0' },
-      }
-    )
-
-    if (!response.ok) return null
-
-    const data: RedditResponse = await response.json()
-
-    // Get random image from hot posts
-    const imagePosts = data.data.children.filter(post => {
-      const { url, is_video, over_18, post_hint } = post.data
-      return !over_18 && !is_video && (post_hint === 'image' || isImageUrl(url))
+    const params = new URLSearchParams({
+      template_id: template.id,
+      username,
+      password,
+      text0: captions.text0,
+      text1: captions.text1,
     })
 
-    if (imagePosts.length === 0) return null
+    const response = await fetch('https://api.imgflip.com/caption_image', {
+      method: 'POST',
+      body: params,
+    })
 
-    const randomPost = imagePosts[Math.floor(Math.random() * imagePosts.length)]
-    return randomPost.data.url
-  } catch {
+    if (!response.ok) return null
+
+    const data: MemeResult = await response.json()
+
+    if (data.success && data.data?.url) {
+      return data.data.url
+    }
+
+    console.error('Imgflip error:', data.error_message)
+    return null
+  } catch (error) {
+    console.error('Meme generation error:', error)
     return null
   }
 }
 
-/**
- * Extract keywords from a topic string
- */
-function extractKeywords(topic: string): string[] {
-  const stopWords = ['the', 'a', 'an', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might', 'must', 'and', 'but', 'or', 'nor', 'for', 'yet', 'so', 'in', 'on', 'at', 'to', 'of', 'with', 'by', 'from', 'as', 'into', 'through', 'during', 'before', 'after', 'above', 'below', 'between', 'under', 'again', 'further', 'then', 'once', 'here', 'there', 'when', 'where', 'why', 'how', 'all', 'each', 'few', 'more', 'most', 'other', 'some', 'such', 'no', 'not', 'only', 'own', 'same', 'than', 'too', 'very', 'just', 'also']
-
-  return topic
-    .toLowerCase()
-    .replace(/[^a-z0-9\s]/g, '')
-    .split(/\s+/)
-    .filter(word => word.length > 2 && !stopWords.includes(word))
-    .slice(0, 3)
-}
-
-/**
- * Fetch a meme related to the given topic
- */
+// Keep the old function name for compatibility
 export async function fetchMeme(topic: string): Promise<string | null> {
-  const keywords = extractKeywords(topic)
-  const query = keywords.join(' ')
-
-  // Try searching each meme subreddit
-  for (const subreddit of MEME_SUBREDDITS) {
-    const memeUrl = await searchSubreddit(subreddit, query)
-    if (memeUrl) return memeUrl
-  }
-
-  // Fallback: get a random hot meme from wallstreetbets or memes
-  const fallbackSubs = ['wallstreetbets', 'memes']
-  for (const sub of fallbackSubs) {
-    const memeUrl = await getHotMemes(sub)
-    if (memeUrl) return memeUrl
-  }
-
-  return null
+  return generateMeme(topic)
 }
