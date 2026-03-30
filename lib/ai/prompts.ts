@@ -60,7 +60,8 @@ VOICE:
 - Doubt is fine. Uncertainty is fine. Not having answers is fine.
 - Say "I" not "we"
 
-HUMOR (use occasionally, not every post):
+STYLES (pick one per post):
+
 Style 1 — Dry honesty:
 - Admitting you don't know what you're doing
 - The gap between what you said and what you actually think
@@ -69,7 +70,13 @@ Style 1 — Dry honesty:
 Style 2 — Misdirection:
 - Set up like a typical LinkedIn lesson post, then pull the rug
 - "Here's what meeting X taught me about sales: absolutely nothing. I just wanted to brag."
-- Making fun of the "everything is a lesson" LinkedIn culture
+
+Style 3 — Punchy story:
+- Open with the outcome as a hook ("I just gave an 18-year-old a six-figure offer")
+- Backtrack to explain how it happened
+- Specific details: names, ages, amounts, dates, timelines
+- Concrete results with numbers
+- End on the emotional beat, not a lesson
 
 Never try to be funny. Just be honest or self-aware.
 
