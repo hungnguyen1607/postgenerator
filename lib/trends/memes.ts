@@ -2,29 +2,35 @@
  * Meme Generator using Imgflip API
  */
 
-// Popular meme templates with their IDs
-const MEME_TEMPLATES = [
-  { id: '181913649', name: 'Drake Hotline Bling' },
-  { id: '87743020', name: 'Two Buttons' },
-  { id: '112126428', name: 'Distracted Boyfriend' },
-  { id: '131087935', name: 'Running Away Balloon' },
-  { id: '217743513', name: 'UNO Draw 25 Cards' },
-  { id: '222403160', name: 'Bernie Sanders Again' },
-  { id: '124822590', name: 'Left Exit 12 Off Ramp' },
-  { id: '91538330', name: 'X X Everywhere' },
-  { id: '102156234', name: 'Mocking Spongebob' },
-  { id: '93895088', name: 'Expanding Brain' },
-  { id: '247375501', name: 'Buff Doge vs Cheems' },
-  { id: '252600902', name: 'Always Has Been' },
-  { id: '188390779', name: 'Woman Yelling At Cat' },
-  { id: '119139145', name: 'Blank Nut Button' },
-  { id: '61579', name: 'One Does Not Simply' },
-  { id: '101470', name: 'Ancient Aliens' },
-  { id: '61520', name: 'Futurama Fry' },
-  { id: '1035805', name: 'Boardroom Meeting' },
-  { id: '4087833', name: 'Waiting Skeleton' },
-  { id: '135256802', name: 'Epic Handshake' },
-]
+// Map template names to imgflip IDs
+const TEMPLATE_IDS: Record<string, string> = {
+  'drake': '181913649',
+  'drake hotline bling': '181913649',
+  'distracted boyfriend': '112126428',
+  'two buttons': '87743020',
+  'uno draw 25': '217743513',
+  'uno draw 25 cards': '217743513',
+  'expanding brain': '93895088',
+  'woman yelling at cat': '188390779',
+  'always has been': '252600902',
+  'one does not simply': '61579',
+  'change my mind': '129242436',
+  'this is fine': '55311130',
+  'left exit 12': '124822590',
+  'left exit 12 off ramp': '124822590',
+  'buff doge vs cheems': '247375501',
+  'epic handshake': '135256802',
+  'futurama fry': '61520',
+  'boardroom meeting': '1035805',
+  'waiting skeleton': '4087833',
+  'bernie sanders': '222403160',
+  'running away balloon': '131087935',
+  'mocking spongebob': '102156234',
+  'is this a pigeon': '100777631',
+  'surprised pikachu': '155067746',
+  'hide the pain harold': '27920420',
+  'roll safe': '89370399',
+}
 
 interface MemeResult {
   success: boolean
@@ -36,80 +42,35 @@ interface MemeResult {
 }
 
 /**
- * Generate captions for different meme formats
+ * Find the best matching template ID
  */
-function generateCaptions(template: string, topic: string): { text0: string; text1: string } {
-  // Extract key parts of the topic
-  const shortTopic = topic.length > 50 ? topic.slice(0, 50) + '...' : topic
+function findTemplateId(templateName: string): string {
+  const normalized = templateName.toLowerCase().trim()
 
-  switch (template) {
-    case 'Drake Hotline Bling':
-      return {
-        text0: 'Reading the news like a normal person',
-        text1: `Panic scrolling about ${shortTopic}`,
-      }
-    case 'Distracted Boyfriend':
-      return {
-        text0: shortTopic,
-        text1: 'My actual work',
-      }
-    case 'Two Buttons':
-      return {
-        text0: 'Ignore it',
-        text1: `Overthink ${shortTopic}`,
-      }
-    case 'UNO Draw 25 Cards':
-      return {
-        text0: `Stay calm about ${shortTopic}`,
-        text1: 'Draw 25',
-      }
-    case 'Left Exit 12 Off Ramp':
-      return {
-        text0: 'Staying productive',
-        text1: `Doom scrolling ${shortTopic}`,
-      }
-    case 'Always Has Been':
-      return {
-        text0: `Wait, it's all ${shortTopic}?`,
-        text1: 'Always has been',
-      }
-    case 'Woman Yelling At Cat':
-      return {
-        text0: `Everyone panicking about ${shortTopic}`,
-        text1: 'Me just vibing',
-      }
-    case 'One Does Not Simply':
-      return {
-        text0: 'One does not simply',
-        text1: `Ignore ${shortTopic}`,
-      }
-    case 'Futurama Fry':
-      return {
-        text0: `Not sure if ${shortTopic} is good`,
-        text1: 'Or if I should panic',
-      }
-    case 'Epic Handshake':
-      return {
-        text0: 'Bulls',
-        text1: 'Bears',
-      }
-    case 'Buff Doge vs Cheems':
-      return {
-        text0: `Me explaining ${shortTopic}`,
-        text1: 'Me understanding it',
-      }
-    default:
-      return {
-        text0: shortTopic,
-        text1: 'Me pretending to understand',
-      }
+  // Direct match
+  if (TEMPLATE_IDS[normalized]) {
+    return TEMPLATE_IDS[normalized]
   }
+
+  // Partial match
+  for (const [name, id] of Object.entries(TEMPLATE_IDS)) {
+    if (normalized.includes(name) || name.includes(normalized)) {
+      return id
+    }
+  }
+
+  // Default to Drake
+  return '181913649'
 }
 
 /**
- * Generate a meme using imgflip API
+ * Generate a meme with specific captions
  */
-export async function generateMeme(topic: string): Promise<string | null> {
+export async function generateMemeFromCaptions(
+  templateName: string,
+  topText: string,
+  bottomText: string
+): Promise<string | null> {
   const username = process.env.IMGFLIP_USERNAME
   const password = process.env.IMGFLIP_PASSWORD
 
@@ -118,17 +79,15 @@ export async function generateMeme(topic: string): Promise<string | null> {
     return null
   }
 
-  // Pick random template
-  const template = MEME_TEMPLATES[Math.floor(Math.random() * MEME_TEMPLATES.length)]
-  const captions = generateCaptions(template.name, topic)
+  const templateId = findTemplateId(templateName)
 
   try {
     const params = new URLSearchParams({
-      template_id: template.id,
+      template_id: templateId,
       username,
       password,
-      text0: captions.text0,
-      text1: captions.text1,
+      text0: topText,
+      text1: bottomText,
     })
 
     const response = await fetch('https://api.imgflip.com/caption_image', {
@@ -150,9 +109,4 @@ export async function generateMeme(topic: string): Promise<string | null> {
     console.error('Meme generation error:', error)
     return null
   }
-}
-
-// Keep the old function name for compatibility
-export async function fetchMeme(topic: string): Promise<string | null> {
-  return generateMeme(topic)
 }

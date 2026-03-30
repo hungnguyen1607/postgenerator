@@ -2,7 +2,7 @@
  * POST /api/generate
  *
  * Streaming endpoint that generates LinkedIn posts using Claude.
- * Uses Vercel AI SDK for streaming responses.
+ * Also returns meme captions for imgflip.
  */
 
 import { streamText } from 'ai'
@@ -32,7 +32,7 @@ export async function POST(req: Request) {
       system: systemPrompt,
       prompt: prompt,
       maxOutputTokens: 1024,
-      temperature: 0.8, // Higher = more creative
+      temperature: 0.8,
     })
 
     // Return as streaming response

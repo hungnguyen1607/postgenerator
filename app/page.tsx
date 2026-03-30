@@ -6,6 +6,7 @@ export default function Home() {
   const [post, setPost] = useState('')
   const [memeUrl, setMemeUrl] = useState<string | null>(null)
   const [isGenerating, setIsGenerating] = useState(false)
+  const [isGeneratingMeme, setIsGeneratingMeme] = useState(false)
   const [copied, setCopied] = useState(false)
 
   const generatePost = useCallback(async () => {
@@ -15,27 +16,14 @@ export default function Home() {
     setCopied(false)
 
     try {
-      // Fetch post and meme in parallel
-      const [postResponse, memeResponse] = await Promise.all([
-        fetch('/api/generate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-        }),
-        fetch('/api/meme'),
-      ])
+      const response = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      })
 
-      // Handle meme response
-      if (memeResponse.ok) {
-        const memeData = await memeResponse.json()
-        if (memeData.memeUrl) {
-          setMemeUrl(memeData.memeUrl)
-        }
-      }
+      if (!response.ok) return
 
-      // Handle streaming post response
-      if (!postResponse.ok) return
-
-      const reader = postResponse.body?.getReader()
+      const reader = response.body?.getReader()
       if (!reader) return
 
       const decoder = new TextDecoder()
@@ -47,6 +35,27 @@ export default function Home() {
         const chunk = decoder.decode(value, { stream: true })
         fullText += chunk
         setPost(fullText)
+      }
+
+      // After post is complete, generate meme based on content
+      if (fullText) {
+        setIsGeneratingMeme(true)
+        try {
+          const memeResponse = await fetch('/api/meme', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ post: fullText }),
+          })
+
+          if (memeResponse.ok) {
+            const memeData = await memeResponse.json()
+            if (memeData.memeUrl) {
+              setMemeUrl(memeData.memeUrl)
+            }
+          }
+        } finally {
+          setIsGeneratingMeme(false)
+        }
       }
     } finally {
       setIsGenerating(false)
@@ -75,7 +84,6 @@ export default function Home() {
       document.body.removeChild(a)
       window.URL.revokeObjectURL(url)
     } catch {
-      // Fallback: open in new tab
       window.open(memeUrl, '_blank')
     }
   }, [memeUrl])
@@ -105,6 +113,12 @@ export default function Home() {
             >
               {copied ? 'Copied' : 'Copy text'}
             </button>
+          </div>
+        )}
+
+        {isGeneratingMeme && (
+          <div className="mt-8 text-sm text-neutral-500">
+            Generating meme...
           </div>
         )}
 
