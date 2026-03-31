@@ -2,7 +2,6 @@
  * POST /api/generate
  *
  * Streaming endpoint that generates LinkedIn posts using Claude.
- * Also returns meme captions for imgflip.
  */
 
 import { streamText } from 'ai'

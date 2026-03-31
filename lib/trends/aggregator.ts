@@ -10,6 +10,7 @@
 import { TrendData } from '@/lib/ai/prompts'
 import { fetchHackerNewsTrends } from './hackernews'
 import { fetchRedditTrends } from './reddit'
+import { fetchGoogleNewsTrends } from './googlenews'
 
 // Cache configuration
 const CACHE_TTL_MS = 15 * 60 * 1000 // 15 minutes
@@ -107,13 +108,14 @@ function normalizeScores(trends: TrendData[]): TrendData[] {
  */
 async function fetchFreshTrends(): Promise<TrendData[]> {
   // Fetch from all sources in parallel
-  const [hnTrends, redditTrends] = await Promise.all([
+  const [hnTrends, redditTrends, googleTrends] = await Promise.all([
     fetchHackerNewsTrends(15),
     fetchRedditTrends(15),
+    fetchGoogleNewsTrends(15),
   ])
 
   // Combine and normalize
-  const allTrends = [...hnTrends, ...redditTrends]
+  const allTrends = [...hnTrends, ...redditTrends, ...googleTrends]
   const normalized = normalizeScores(allTrends)
 
   // Shuffle to add variety, then sort by score
@@ -137,22 +139,35 @@ async function fetchFreshTrends(): Promise<TrendData[]> {
 }
 
 /**
+ * Shuffle array to get variety on each request
+ */
+function shuffleArray<T>(array: T[]): T[] {
+  const shuffled = [...array]
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+  }
+  return shuffled
+}
+
+/**
  * Get aggregated trends with caching
  *
  * Tries caches first, fetches fresh data if needed.
  * Returns fallback evergreen topics if all sources fail.
+ * Always shuffles results to ensure variety on each request.
  */
 export async function getAggregatedTrends(): Promise<TrendData[]> {
   // Try KV cache first
   const kvCached = await getFromKV()
   if (kvCached && kvCached.length > 0) {
-    return kvCached
+    return shuffleArray(kvCached)
   }
 
   // Try memory cache
   const memoryCached = getFromMemory()
   if (memoryCached && memoryCached.length > 0) {
-    return memoryCached
+    return shuffleArray(memoryCached)
   }
 
   // Fetch fresh trends
