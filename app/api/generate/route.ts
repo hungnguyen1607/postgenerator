@@ -7,7 +7,6 @@
 import { streamText } from 'ai'
 import { anthropic } from '@ai-sdk/anthropic'
 import { buildPrompt, buildSystemPrompt } from '@/lib/ai/prompts'
-import { generateVarietyConfig } from '@/lib/ai/variety'
 import { getAggregatedTrends } from '@/lib/trends/aggregator'
 
 // Use edge runtime for streaming
@@ -15,15 +14,12 @@ export const runtime = 'edge'
 
 export async function POST(req: Request) {
   try {
-    // Generate fresh variety config for this request
-    const varietyConfig = generateVarietyConfig()
-
     // Fetch real trends from HN + Reddit (with caching)
     const trends = await getAggregatedTrends()
 
     // Build prompts
     const systemPrompt = buildSystemPrompt()
-    const prompt = buildPrompt({ trends, varietyConfig })
+    const prompt = buildPrompt({ trends })
 
     // Stream response from Claude
     const result = streamText({
