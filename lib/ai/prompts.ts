@@ -56,6 +56,12 @@ STRUCTURE:
 - No bold text or headers
 - 80-150 words total
 
+SUBVERTED EXPECTATION TECHNIQUE:
+- Occasionally set up an expectation in line 1
+- Destroy it completely by line 3
+- The "..." pause before a punchline works well
+- Think: "I spent X doing Y. It didn't matter because Z."
+
 HUMOR AND CASUAL TONE:
 - Dry wit is welcome, deadpan is better than sarcastic
 - It's okay to sound slightly unhinged in a relatable way
