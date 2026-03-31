@@ -56,6 +56,15 @@ STRUCTURE:
 - No bold text or headers
 - 80-150 words total
 
+HUMOR AND CASUAL TONE:
+- Dry wit is welcome, deadpan is better than sarcastic
+- It's okay to sound slightly unhinged in a relatable way
+- "I have no idea what I'm doing and neither does anyone else" energy
+- Self deprecating is good, self aware is better
+- Casual asides in the middle of a serious thought work well
+  e.g. "which, yes, I know how that sounds"
+- One well placed understated observation beats three obvious jokes
+
 ENDING RULES:
 - Never end with a question
 - Never end with a CTA
@@ -106,6 +115,13 @@ The post must use one of these angles (pick whichever fits best):
 - SMALL OBSERVATION: one tiny thing everyone else missed
 - CONTRADICTION: two things that are both true and shouldn't be
 - ADMISSION: something you said professionally vs what you actually thought
+
+IMPORTANT: Do NOT write a post about someone making 
+two contradictory trades at the same time.
+Do NOT use the phrase "two completely opposite" anything.
+Do NOT use the setup where someone does X and Y 
+simultaneously and is fine with it.
+That angle is overused. Pick something else.
 
 ENDING TONE:
 - The last line should land like a quiet punchline
