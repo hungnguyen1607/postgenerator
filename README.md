@@ -1,1 +1,1 @@
-Post generator app for Pronexus internship
+Post generator app for Linkedin
